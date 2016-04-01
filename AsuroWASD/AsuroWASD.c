@@ -28,7 +28,7 @@
 void setMotor(char DirLeft, char DirRight, char SpeedLeft, char SpeedRight); 
 void checkData(); 
 void readData(); 
-void readOdometrie(uint8_t side, uint8_t *flag, uint8_t *rpm, unsigned int *brightness[]);
+void readOdometrie(uint8_t side, uint8_t *flag, uint8_t *rpm, unsigned int brightness[]);
 
 
 int main(void)
@@ -42,6 +42,7 @@ int main(void)
 	uint8_t rpmLeft = 0;
 	uint8_t rpmRight = 0; 
 	uint8_t rpmdif = 000; 
+	int rpmout = 0; 
 	unsigned int  brightnessdata[2];
 
 	
@@ -58,21 +59,30 @@ int main(void)
 		readOdometrie(RIGHT, flagRight, rpmRight, brightnessdata); 
 		
 		rpmdif = rpmLeft - rpmRight; 
+		rpmout = (int) rpmdif; 
 		usart_puts("RPM");
-		usart_puti((int) rpmdif, 3);
+		usart_puti((int) rpmout, 3);
+		usart_puts("\r\n");
+
 		
-		/*if (rpmdif > 0) {
+		if (rpmdif > 2) {
+			usart_puts("RpmDif>2");
+			usart_puts("\r\n");
 			IstSpeedLeft--;
 		}
-		else if (rpmdif < 0) {
+		else if (rpmdif < -2) {
+			usart_puts("RpmDif<2");
+			usart_puts("\r\n");
 			IstSpeedRight--; 
 		}
 		else{
+			usart_puts("RpmDif=0");
+			usart_puts("\r\n");
 			IstSpeedLeft = SollSpeedLeft; 
 			IstSpeedRight = SollSpeedRight;
 			rpmLeft = 0; 
 			rpmRight = 0;  
-		}		*/
+		}		
 //-----------------------------------------------------------------Minimaldrehzahl
 		if (IstSpeedLeft < 100) {
 			IstSpeedLeft = 100; 
@@ -86,6 +96,7 @@ int main(void)
 		if (handshake == 1)
 		{
 			usart_puts("Handshake ");
+			usart_puts("\r\n");
 			handshake = 0;  
 		}
 	
@@ -98,12 +109,13 @@ int main(void)
 
 void setMotor(char DirLeft, char DirRight, char SpeedLeft, char SpeedRight)
 {
-	usart_putc('M');
+	/*usart_puts("setMotor");
 	usart_putc('L');
 	usart_puti((int) SpeedLeft, 3);
 	usart_putc('R');
-	usart_puti((int) SpeedRight, 3);
+	usart_puti((int) SpeedRight, 3);*/
 	MotorDir(DirLeft,DirRight);
+	usart_puts("\r\n");
 	MotorSpeed(SpeedLeft, SpeedRight);
 	
 	return;  
@@ -135,8 +147,8 @@ void checkData() {
 		DirRight = FWD;
 		BackLED(ON,OFF);
 		FrontLED(OFF);
-		usart_putc('L');
-		usart_puti((int) SollSpeedLeft, 3);
+		/*usart_putc('L');
+		usart_puti((int) SollSpeedLeft, 3);*/
 		//usart_putc(ReadData[0]);
 	}
 	//-----------------------------------------------rechts
@@ -146,8 +158,8 @@ void checkData() {
 		DirRight = FREE;
 		BackLED(OFF, ON);
 		FrontLED(OFF);
-		usart_putc('R');
-		usart_puti((int) SollSpeedRight, 3);
+		/*usart_putc('R');
+		usart_puti((int) SollSpeedRight, 3);*/
 		//usart_putc(ReadData[0]);
 	}
 	//-----------------------------------------------Speed
@@ -183,7 +195,7 @@ void checkData() {
 	//-----------------------------------------------Handshake
 	else if (ReadData[0] == 'h')
 	{
-		usart_puts("Handshake ");
+		usart_puts("Handshake \r\n");
 	}
 }
 
@@ -195,7 +207,7 @@ void readData(){
 				if ((ReadData[0] == 'G') /*&& (usart_string_avail_intr() == 1)*/)
 				{
 					StatusLED(OFF);
-					//usart_puts(" IF_G ");
+					//usart_puts(" IF_G \r\n");
 					//usart_putc(ReadData[0]);
 					int i=1;
 					while (ReadData[i] != 'E' && usart_byte_avail_intr() == 1)
@@ -213,22 +225,22 @@ void readData(){
 			}
 }
 
-void readOdometrie(uint8_t side,uint8_t *flag, uint8_t *rpm, unsigned int *brightness[]){
+void readOdometrie(uint8_t side,uint8_t *flag, uint8_t *rpm, unsigned int brightness[]){
 	
 	OdometrieData(brightness); 
-	usart_putc('B');
+	usart_puts("OdData");
 	if (side == LEFT){
 		usart_puti((int) brightness[LEFT], 3);
 
-		if ((brightness[LEFT] < 550) && (flag == TRUE)) {
-			
+		if ((brightness[LEFT] < 600) /*&& (flag == TRUE)*/) {
+			usart_puts("WHITE\r\n");
 			flag = FALSE; 
 			rpm++;
 		
 		}
 	
-		if ((brightness[LEFT] > 650) && (flag == FALSE)) {
-			
+		else if ((brightness[LEFT] > 650) /*&& (flag == FALSE)*/) {
+			usart_puts("BLACK\r\n");
 			flag = TRUE; 
 			rpm++;
 		
@@ -236,15 +248,15 @@ void readOdometrie(uint8_t side,uint8_t *flag, uint8_t *rpm, unsigned int *brigh
 	}
 	if (side == RIGHT){
 		usart_puti((int) brightness[RIGHT], 3);
-			if ((brightness[RIGHT] < 550) && (flag == TRUE)) {
-			
+			if ((brightness[RIGHT] < 600) /*&& (flag == TRUE)*/) {
+			usart_puts("WHITE\r\n");
 			flag = FALSE;
 			rpm++;
 			
 		}
 		
-		if ((brightness[RIGHT] > 650) && (flag == FALSE)) {
-			
+		else if ((brightness[RIGHT] > 650) /*&& (flag == FALSE)*/) {
+			usart_puts("BLACK\r\n");
 			flag = TRUE;
 			rpm++;
 			
