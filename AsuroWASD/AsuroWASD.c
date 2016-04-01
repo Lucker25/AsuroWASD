@@ -28,11 +28,7 @@
 void setMotor(char DirLeft, char DirRight, char SpeedLeft, char SpeedRight); 
 void checkData(); 
 void readData(); 
-<<<<<<< HEAD
 void readOdometrie(uint8_t side, uint8_t *flag, uint8_t *rpm, unsigned int brightness[]);
-=======
-void readOdometrie(uint8_t side, uint8_t *flag, uint8_t *rpm, unsigned int *brightness[]);
->>>>>>> master
 
 
 int main(void)
@@ -46,10 +42,7 @@ int main(void)
 	uint8_t rpmLeft = 0;
 	uint8_t rpmRight = 0; 
 	uint8_t rpmdif = 000; 
-<<<<<<< HEAD
 	int rpmout = 0; 
-=======
->>>>>>> master
 	unsigned int  brightnessdata[2];
 
 	
@@ -64,7 +57,6 @@ int main(void)
 //-----------------------------------------------------------------Regelung
 		readOdometrie(LEFT, flagLeft, rpmLeft, brightnessdata); 
 		readOdometrie(RIGHT, flagRight, rpmRight, brightnessdata); 
-<<<<<<< HEAD
 		
 		rpmdif = rpmLeft - rpmRight; 
 		rpmout = (int) rpmdif; 
@@ -86,29 +78,11 @@ int main(void)
 		else{
 			usart_puts("RpmDif=0");
 			usart_puts("\r\n");
-=======
-		
-		rpmdif = rpmLeft - rpmRight; 
-		usart_puts("RPM");
-		usart_puti((int) rpmdif, 3);
-		
-		/*if (rpmdif > 0) {
-			IstSpeedLeft--;
-		}
-		else if (rpmdif < 0) {
-			IstSpeedRight--; 
-		}
-		else{
->>>>>>> master
 			IstSpeedLeft = SollSpeedLeft; 
 			IstSpeedRight = SollSpeedRight;
 			rpmLeft = 0; 
 			rpmRight = 0;  
-<<<<<<< HEAD
 		}		
-=======
-		}		*/
->>>>>>> master
 //-----------------------------------------------------------------Minimaldrehzahl
 		if (IstSpeedLeft < 100) {
 			IstSpeedLeft = 100; 
@@ -135,19 +109,11 @@ int main(void)
 
 void setMotor(char DirLeft, char DirRight, char SpeedLeft, char SpeedRight)
 {
-<<<<<<< HEAD
 	/*usart_puts("setMotor");
 	usart_putc('L');
 	usart_puti((int) SpeedLeft, 3);
 	usart_putc('R');
 	usart_puti((int) SpeedRight, 3);*/
-=======
-	usart_putc('M');
-	usart_putc('L');
-	usart_puti((int) SpeedLeft, 3);
-	usart_putc('R');
-	usart_puti((int) SpeedRight, 3);
->>>>>>> master
 	MotorDir(DirLeft,DirRight);
 	usart_puts("\r\n");
 	MotorSpeed(SpeedLeft, SpeedRight);
@@ -181,13 +147,8 @@ void checkData() {
 		DirRight = FWD;
 		BackLED(ON,OFF);
 		FrontLED(OFF);
-<<<<<<< HEAD
 		/*usart_putc('L');
 		usart_puti((int) SollSpeedLeft, 3);*/
-=======
-		usart_putc('L');
-		usart_puti((int) SollSpeedLeft, 3);
->>>>>>> master
 		//usart_putc(ReadData[0]);
 	}
 	//-----------------------------------------------rechts
@@ -197,13 +158,8 @@ void checkData() {
 		DirRight = FREE;
 		BackLED(OFF, ON);
 		FrontLED(OFF);
-<<<<<<< HEAD
 		/*usart_putc('R');
 		usart_puti((int) SollSpeedRight, 3);*/
-=======
-		usart_putc('R');
-		usart_puti((int) SollSpeedRight, 3);
->>>>>>> master
 		//usart_putc(ReadData[0]);
 	}
 	//-----------------------------------------------Speed
@@ -239,11 +195,7 @@ void checkData() {
 	//-----------------------------------------------Handshake
 	else if (ReadData[0] == 'h')
 	{
-<<<<<<< HEAD
 		usart_puts("Handshake \r\n");
-=======
-		usart_puts("Handshake ");
->>>>>>> master
 	}
 }
 
@@ -255,11 +207,7 @@ void readData(){
 				if ((ReadData[0] == 'G') /*&& (usart_string_avail_intr() == 1)*/)
 				{
 					StatusLED(OFF);
-<<<<<<< HEAD
 					//usart_puts(" IF_G \r\n");
-=======
-					//usart_puts(" IF_G ");
->>>>>>> master
 					//usart_putc(ReadData[0]);
 					int i=1;
 					while (ReadData[i] != 'E' && usart_byte_avail_intr() == 1)
@@ -277,7 +225,6 @@ void readData(){
 			}
 }
 
-<<<<<<< HEAD
 void readOdometrie(uint8_t side,uint8_t *flag, uint8_t *rpm, unsigned int brightness[]){
 	
 	OdometrieData(brightness); 
@@ -287,29 +234,13 @@ void readOdometrie(uint8_t side,uint8_t *flag, uint8_t *rpm, unsigned int bright
 
 		if ((brightness[LEFT] < 600) /*&& (flag == TRUE)*/) {
 			usart_puts("WHITE\r\n");
-=======
-void readOdometrie(uint8_t side,uint8_t *flag, uint8_t *rpm, unsigned int *brightness[]){
-	
-	OdometrieData(brightness); 
-	usart_putc('B');
-	if (side == LEFT){
-		usart_puti((int) brightness[LEFT], 3);
-
-		if ((brightness[LEFT] < 550) && (flag == TRUE)) {
-			
->>>>>>> master
 			flag = FALSE; 
 			rpm++;
 		
 		}
 	
-<<<<<<< HEAD
 		else if ((brightness[LEFT] > 650) /*&& (flag == FALSE)*/) {
 			usart_puts("BLACK\r\n");
-=======
-		if ((brightness[LEFT] > 650) && (flag == FALSE)) {
-			
->>>>>>> master
 			flag = TRUE; 
 			rpm++;
 		
@@ -317,25 +248,15 @@ void readOdometrie(uint8_t side,uint8_t *flag, uint8_t *rpm, unsigned int *brigh
 	}
 	if (side == RIGHT){
 		usart_puti((int) brightness[RIGHT], 3);
-<<<<<<< HEAD
 			if ((brightness[RIGHT] < 600) /*&& (flag == TRUE)*/) {
 			usart_puts("WHITE\r\n");
-=======
-			if ((brightness[RIGHT] < 550) && (flag == TRUE)) {
-			
->>>>>>> master
 			flag = FALSE;
 			rpm++;
 			
 		}
 		
-<<<<<<< HEAD
 		else if ((brightness[RIGHT] > 650) /*&& (flag == FALSE)*/) {
 			usart_puts("BLACK\r\n");
-=======
-		if ((brightness[RIGHT] > 650) && (flag == FALSE)) {
-			
->>>>>>> master
 			flag = TRUE;
 			rpm++;
 			
