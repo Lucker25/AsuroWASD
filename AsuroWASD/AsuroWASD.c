@@ -19,31 +19,34 @@
 	char DirRight = FREE;
 	char DirLeft = FREE;
 	uint32_t handshake = 0;
-	uint32_t IstSpeedLeft = 0; 
-	uint32_t IstSpeedRight = 0; 
-
+	uint32_t IstSpeedLeft = 0;
+	uint32_t IstSpeedRight = 0;
+	unsigned int  brightnessdata[2] ={0,0};
+	uint8_t flag [2] = {0, 0};
+	uint8_t rpm [2] = {0, 0};
+	int16_t rpmdif = 0;
+	uint8_t counter = 0;
+	uint16_t rpm_auswertung [2] = {0,0};
 	
 
 
 void setMotor(char DirLeft, char DirRight, char SpeedLeft, char SpeedRight); 
 void checkData(); 
 void readData(); 
-void readOdometrie(uint8_t side, uint8_t *flag, uint8_t *rpm, unsigned int brightness[]);
-
 
 int main(void)
 {
-	Init(); 
+	Init();
 
 	usart_init_intr(9600);
-	uint32_t counter = 0; 
-	uint8_t flagLeft = FALSE;
-	uint8_t flagRight = FALSE;
-	uint8_t rpmLeft = 0;
-	uint8_t rpmRight = 0; 
-	uint8_t rpmdif = 000; 
-	int rpmout = 0; 
-	unsigned int  brightnessdata[2];
+	// Timer 0 konfigurieren
+	TCCR0 = (1<<CS01) | (1<<CS00); // Prescaler 64
+	
+	// Overflow Interrupt erlauben
+	TIMSK |= (1<<TOIE0);
+	
+	// Global Interrupts aktivieren
+	sei();
 
 	
 	
@@ -55,40 +58,39 @@ int main(void)
 //-----------------------------------------------------------------WASD Steuerung
 		checkData(); 
 //-----------------------------------------------------------------Regelung
-		readOdometrie(LEFT, flagLeft, rpmLeft, brightnessdata); 
-		readOdometrie(RIGHT, flagRight, rpmRight, brightnessdata); 
 		
-		rpmdif = rpmLeft - rpmRight; 
-		rpmout = (int) rpmdif; 
-		usart_puts("RPM");
-		usart_puti((int) rpmout, 3);
-		usart_puts("\r\n");
 
 		
-		if (rpmdif > 2) {
-			usart_puts("RpmDif>2");
-			usart_puts("\r\n");
-			IstSpeedLeft--;
+		rpmdif = rpm_auswertung[LEFT] - rpm_auswertung[RIGHT];
+		usart_puts("RPMDIF ");
+		usart_puti(rpmdif, 3);
+		usart_puts("\r\n");
+		
+		
+		/*if (rpmdif > 1) {
+
+			IstSpeedRight += 2;
+
 		}
-		else if (rpmdif < -2) {
-			usart_puts("RpmDif<2");
-			usart_puts("\r\n");
-			IstSpeedRight--; 
-		}
-		else{
-			usart_puts("RpmDif=0");
-			usart_puts("\r\n");
-			IstSpeedLeft = SollSpeedLeft; 
-			IstSpeedRight = SollSpeedRight;
-			rpmLeft = 0; 
-			rpmRight = 0;  
-		}		
+		if (rpmdif < -1 ) {
+
+			IstSpeedRight -= 2;
+
+
+		}*/
+	
 //-----------------------------------------------------------------Minimaldrehzahl
 		if (IstSpeedLeft < 100) {
 			IstSpeedLeft = 100; 
 		}
 		if (IstSpeedRight < 100){
 			IstSpeedRight =100; 
+		}
+		if (IstSpeedLeft > 255) {
+			IstSpeedLeft = 255;
+		}
+		if (IstSpeedRight > 255){
+			IstSpeedRight = 255;
 		}
 		setMotor(DirLeft, DirRight, IstSpeedLeft, IstSpeedRight);
 		
@@ -115,8 +117,8 @@ void setMotor(char DirLeft, char DirRight, char SpeedLeft, char SpeedRight)
 	usart_putc('R');
 	usart_puti((int) SpeedRight, 3);*/
 	MotorDir(DirLeft,DirRight);
-	usart_puts("\r\n");
-	MotorSpeed(SpeedLeft, SpeedRight);
+	//usart_puts("\r\n");
+	MotorSpeed(220, 200);
 	
 	return;  
 }
@@ -225,41 +227,48 @@ void readData(){
 			}
 }
 
-void readOdometrie(uint8_t side,uint8_t *flag, uint8_t *rpm, unsigned int brightness[]){
-	
-	OdometrieData(brightness); 
-	usart_puts("OdData");
-	if (side == LEFT){
-		usart_puti((int) brightness[LEFT], 3);
 
-		if ((brightness[LEFT] < 600) /*&& (flag == TRUE)*/) {
-			usart_puts("WHITE\r\n");
-			flag = FALSE; 
-			rpm++;
-		
-		}
-	
-		else if ((brightness[LEFT] > 650) /*&& (flag == FALSE)*/) {
-			usart_puts("BLACK\r\n");
-			flag = TRUE; 
-			rpm++;
-		
-		}
-	}
-	if (side == RIGHT){
-		usart_puti((int) brightness[RIGHT], 3);
-			if ((brightness[RIGHT] < 600) /*&& (flag == TRUE)*/) {
-			usart_puts("WHITE\r\n");
-			flag = FALSE;
-			rpm++;
-			
-		}
-		
-		else if ((brightness[RIGHT] > 650) /*&& (flag == FALSE)*/) {
-			usart_puts("BLACK\r\n");
-			flag = TRUE;
-			rpm++;
-			
-		}
-	}
+ISR (TIMER0_OVF_vect)
+{
+  /* Interrupt Aktion alle
+  (1000000/64)/256 Hz = 61 Hz
+  bzw.
+  1/256 s = 0,016 s  = 16 ms
+  */
+
+  OdometrieData(brightnessdata);
+
+  if ((brightnessdata[LEFT] < 680) && (flag[LEFT] == BLACK)) {// WEISS
+	  flag[LEFT] = WHITE;
+	  rpm[LEFT]++;
+	  
+  }
+  
+  if ((brightnessdata[LEFT] > 720) && (flag[LEFT] == WHITE)) {// SCHWARZ
+	  flag[LEFT] = BLACK;
+	  rpm[LEFT]++; 
+	  
+  }
+  
+  if ((brightnessdata[RIGHT] < 680) && (flag[RIGHT] == BLACK)) {// WEISS
+	  flag[RIGHT] = WHITE;
+	  rpm[RIGHT]++;
+	  
+  }
+  
+  if ((brightnessdata[RIGHT] > 720) && (flag[RIGHT] == WHITE)) {// SCHWARZ
+	  flag[RIGHT] = BLACK;
+	  rpm[RIGHT]++;
+	  
+  }
+  counter++; 
+  if (counter == 31) // ca 1/2 Sekunde 
+  {	
+	  counter = 0; 
+	  rpm_auswertung[LEFT] = rpm[LEFT]; 
+	  rpm_auswertung[RIGHT] = rpm[RIGHT]; 
+	  rpm[LEFT]= 0;
+	  rpm[RIGHT] = 0; 
+  }
+  
 }

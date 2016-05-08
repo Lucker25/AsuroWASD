@@ -45,6 +45,9 @@
 #define LEFT    0
 #define RIGHT   1
 
+#define WHITE	0 
+#define BLACK	1 
+
 /* Init function Processor will be initalized to work correctly */
 void Init(void);
 
