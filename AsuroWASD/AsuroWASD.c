@@ -16,23 +16,29 @@
 	char ReadData[15];
 	uint32_t SollSpeedLeft = 200;
 	uint32_t SollSpeedRight = 200;
-	char DirRight = FREE;
-	char DirLeft = FREE;
-	uint32_t handshake = 0;
-	uint32_t IstSpeedLeft = 0;
-	uint32_t IstSpeedRight = 0;
+	char DirRight = FREE;//FREE
+	char DirLeft = FREE;//FREE
+	uint16_t IstSpeedLeft = 0;
+	uint16_t IstSpeedRight = 0;
 	unsigned int  brightnessdata[2] ={0,0};
 	uint8_t flag [2] = {0, 0};
 	uint8_t rpm [2] = {0, 0};
 	int16_t rpmdif = 0;
 	uint8_t counter = 0;
-	uint16_t rpm_auswertung [2] = {0,0};
+	int8_t rpm_auswertung [2] = {0,0};
+	unsigned int  odd_data_check[2] ={0,0};	
+	float rpm_i = 0; 
+	float KP = 2; 
+	float KI =0.5; 
+	float rpm_p = 0; 
+	int16_t rpm_sum = 0; 
 	
 
 
-void setMotor(char DirLeft, char DirRight, char SpeedLeft, char SpeedRight); 
+void setMotor(char DirLeft, char DirRight, unsigned char SpeedLeft, unsigned char SpeedRight); 
 void checkData(); 
 void readData(); 
+int constrain(int variable, int low_limit, int high_limit);
 
 int main(void)
 {
@@ -40,7 +46,7 @@ int main(void)
 
 	usart_init_intr(9600);
 	// Timer 0 konfigurieren
-	TCCR0 = (1<<CS01) | (1<<CS00); // Prescaler 64
+	TCCR0 = (1<<CS01); //Prescaler 8 | (1<<CS00); // Prescaler 64
 	
 	// Overflow Interrupt erlauben
 	TIMSK |= (1<<TOIE0);
@@ -59,48 +65,19 @@ int main(void)
 		checkData(); 
 //-----------------------------------------------------------------Regelung
 		
-
 		
-		rpmdif = rpm_auswertung[LEFT] - rpm_auswertung[RIGHT];
-		usart_puts("RPMDIF ");
-		usart_puti(rpmdif, 3);
+		usart_putc('L');
+		usart_puti(rpm_auswertung[LEFT], 3);
+		usart_putc('R');
+		usart_puti(rpm_auswertung[RIGHT], 3);
 		usart_puts("\r\n");
-		
-		
-		/*if (rpmdif > 1) {
-
-			IstSpeedRight += 2;
-
-		}
-		if (rpmdif < -1 ) {
-
-			IstSpeedRight -= 2;
-
-
-		}*/
 	
-//-----------------------------------------------------------------Minimaldrehzahl
-		if (IstSpeedLeft < 100) {
-			IstSpeedLeft = 100; 
-		}
-		if (IstSpeedRight < 100){
-			IstSpeedRight =100; 
-		}
-		if (IstSpeedLeft > 255) {
-			IstSpeedLeft = 255;
-		}
-		if (IstSpeedRight > 255){
-			IstSpeedRight = 255;
-		}
+//-----------------------------------------------------------------Minimal/Maximalwerte
+		IstSpeedLeft = constrain(IstSpeedLeft, 100, 255); 
+		IstSpeedRight = constrain(IstSpeedRight, 100, 255); 
+
 		setMotor(DirLeft, DirRight, IstSpeedLeft, IstSpeedRight);
 		
-//---------------------------------------------------------Handshake 
-		if (handshake == 1)
-		{
-			usart_puts("Handshake ");
-			usart_puts("\r\n");
-			handshake = 0;  
-		}
 	
 	}
 	//------------------------------------------------------------------------------------------------Ende while
@@ -109,7 +86,7 @@ int main(void)
 
 
 
-void setMotor(char DirLeft, char DirRight, char SpeedLeft, char SpeedRight)
+void setMotor(char DirLeft,  char DirRight, unsigned char SpeedLeft, unsigned char SpeedRight)
 {
 	/*usart_puts("setMotor");
 	usart_putc('L');
@@ -118,7 +95,8 @@ void setMotor(char DirLeft, char DirRight, char SpeedLeft, char SpeedRight)
 	usart_puti((int) SpeedRight, 3);*/
 	MotorDir(DirLeft,DirRight);
 	//usart_puts("\r\n");
-	MotorSpeed(220, 200);
+	MotorSpeed(SpeedLeft, SpeedRight);
+	
 	
 	return;  
 }
@@ -129,8 +107,8 @@ void checkData() {
 	{
 		DirLeft = FWD;
 		DirRight = FWD;
-		BackLED(ON,ON);
-		FrontLED(OFF);
+		//BackLED(ON,ON);
+		//FrontLED(OFF);
 		//usart_putc(ReadData[0]);
 	}
 	//----------------------------------------------rückwärts
@@ -138,8 +116,8 @@ void checkData() {
 	{
 		DirLeft = RWD;
 		DirRight = RWD;
-		BackLED(ON, ON);
-		FrontLED(ON);
+		//BackLED(ON, ON);
+		//FrontLED(ON);
 		//usart_putc(ReadData[0]);
 	}
 	//-----------------------------------------------links
@@ -147,8 +125,8 @@ void checkData() {
 	{
 		DirLeft = FREE;
 		DirRight = FWD;
-		BackLED(ON,OFF);
-		FrontLED(OFF);
+		//BackLED(ON,OFF);
+		//FrontLED(OFF);
 		/*usart_putc('L');
 		usart_puti((int) SollSpeedLeft, 3);*/
 		//usart_putc(ReadData[0]);
@@ -158,8 +136,8 @@ void checkData() {
 	{
 		DirLeft = FWD;
 		DirRight = FREE;
-		BackLED(OFF, ON);
-		FrontLED(OFF);
+		//BackLED(OFF, ON);
+		//FrontLED(OFF);
 		/*usart_putc('R');
 		usart_puti((int) SollSpeedRight, 3);*/
 		//usart_putc(ReadData[0]);
@@ -231,11 +209,12 @@ void readData(){
 ISR (TIMER0_OVF_vect)
 {
   /* Interrupt Aktion alle
-  (1000000/64)/256 Hz = 61 Hz
+  (1000000/8)/256 Hz = 488 Hz
   bzw.
-  1/256 s = 0,016 s  = 16 ms
+  1/488 s = 0,002 s  = 2 ms
   */
-
+  
+  
   OdometrieData(brightnessdata);
 
   if ((brightnessdata[LEFT] < 680) && (flag[LEFT] == BLACK)) {// WEISS
@@ -262,13 +241,45 @@ ISR (TIMER0_OVF_vect)
 	  
   }
   counter++; 
-  if (counter == 31) // ca 1/2 Sekunde 
+  if (counter >= 75) // 150 ms 
   {	
 	  counter = 0; 
 	  rpm_auswertung[LEFT] = rpm[LEFT]; 
 	  rpm_auswertung[RIGHT] = rpm[RIGHT]; 
 	  rpm[LEFT]= 0;
 	  rpm[RIGHT] = 0; 
-  }
   
+  
+	rpmdif = rpm_auswertung[LEFT] - rpm_auswertung[RIGHT];
+  
+  
+  
+	rpm_p = rpmdif * KP;
+  
+	rpm_sum = rpm_sum + rpmdif;
+	rpm_sum = constrain(rpm_sum, -255, 255);
+	rpm_i = rpm_sum * 0;
+  
+  
+	IstSpeedRight = IstSpeedRight + (rpm_i + rpm_p);
+	IstSpeedRight = constrain(IstSpeedRight, 100, 255); 
+	
+	MotorSpeed(IstSpeedLeft, IstSpeedRight);
+	StatusLED(GREEN);
+  }
+  StatusLED(RED); 
+}
+
+int constrain(int variable, int low_limit, int high_limit){
+	if (variable < low_limit){
+		return low_limit; 
+	}
+	else if (variable > high_limit){
+		return high_limit; 
+	}
+	else {
+		return variable; 
+	}
+	
+	
 }
