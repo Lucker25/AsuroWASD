@@ -14,28 +14,31 @@
 
 //--------------------------------------------------Variablen
 	char ReadData[15];
-	uint32_t SollSpeedLeft = 200;
-	uint32_t SollSpeedRight = 200;
+	uint16_t SollSpeedLeft = 200;
+	uint16_t SollSpeedRight = 200;
 	char DirRight = FREE;//FREE
 	char DirLeft = FREE;//FREE
 	uint16_t IstSpeedLeft = 0;
 	uint16_t IstSpeedRight = 0;
 	unsigned int  brightnessdata[2] ={0,0};
 	uint8_t flag [2] = {0, 0};
-	uint8_t rpm [2] = {0, 0};
-	int16_t rpmdif = 0;
-	uint8_t counter = 0;
+	uint16_t rpm [2] = {0, 0};
+	int16_t curr_error = 0;
+	uint16_t counter = 0;
 	int8_t rpm_auswertung [2] = {0,0};
 	unsigned int  odd_data_check[2] ={0,0};	
-	float rpm_i = 0; 
-	float KP = 2; 
-	float KI =0.5; 
-	float rpm_p = 0; 
-	int16_t rpm_sum = 0; 
-	
-
+	int16_t rpm_i = 0; 
+	int8_t KP = 0; 
+	int8_t KI = 0; 
+	int8_t KD = 0; 
+	int16_t rpm_p = 0; 
+	int16_t error_sum = 0; 
+	int16_t prev_error = 0; 
+	int16_t rpm_d = 0; 
+	int16_t rpm_i_prev = 0; 
 
 void setMotor(char DirLeft, char DirRight, unsigned char SpeedLeft, unsigned char SpeedRight); 
+void setMotorSpeed(unsigned char SpeedLeft, unsigned char SpeedRight);
 void checkData(); 
 void readData(); 
 int constrain(int variable, int low_limit, int high_limit);
@@ -66,15 +69,12 @@ int main(void)
 //-----------------------------------------------------------------Regelung
 		
 		
-		usart_putc('L');
-		usart_puti(rpm_auswertung[LEFT], 3);
-		usart_putc('R');
-		usart_puti(rpm_auswertung[RIGHT], 3);
+		usart_putc('E');
+		usart_puti(curr_error, 3);
 		usart_puts("\r\n");
 	
 //-----------------------------------------------------------------Minimal/Maximalwerte
-		IstSpeedLeft = constrain(IstSpeedLeft, 100, 255); 
-		IstSpeedRight = constrain(IstSpeedRight, 100, 255); 
+
 
 		setMotor(DirLeft, DirRight, IstSpeedLeft, IstSpeedRight);
 		
@@ -88,6 +88,9 @@ int main(void)
 
 void setMotor(char DirLeft,  char DirRight, unsigned char SpeedLeft, unsigned char SpeedRight)
 {
+	
+	IstSpeedLeft = constrain(IstSpeedLeft, 100, 255);
+	IstSpeedRight = constrain(IstSpeedRight, 100, 255);
 	/*usart_puts("setMotor");
 	usart_putc('L');
 	usart_puti((int) SpeedLeft, 3);
@@ -99,6 +102,12 @@ void setMotor(char DirLeft,  char DirRight, unsigned char SpeedLeft, unsigned ch
 	
 	
 	return;  
+}
+void setMotorSpeed(unsigned char SpeedLeft, unsigned char SpeedRight){
+	IstSpeedLeft = constrain(IstSpeedLeft, 100, 255);
+	IstSpeedRight = constrain(IstSpeedRight, 100, 255);
+	MotorSpeed(SpeedLeft, SpeedRight);
+	
 }
 
 void checkData() {
@@ -123,7 +132,7 @@ void checkData() {
 	//-----------------------------------------------links
 	else if (ReadData[0] == 'A')
 	{
-		DirLeft = FREE;
+		DirLeft = RWD;
 		DirRight = FWD;
 		//BackLED(ON,OFF);
 		//FrontLED(OFF);
@@ -135,7 +144,7 @@ void checkData() {
 	else if (ReadData[0] == 'D')
 	{
 		DirLeft = FWD;
-		DirRight = FREE;
+		DirRight = RWD;
 		//BackLED(OFF, ON);
 		//FrontLED(OFF);
 		/*usart_putc('R');
@@ -160,7 +169,35 @@ void checkData() {
 		usart_putc('L');
 		usart_puti((int) SollSpeedLeft, 3);
 		usart_putc('R');
-		usart_puti((int) SollSpeedRight, 3);*/
+		usart_puti((int) SollSpeedRight, 3);
+		usart_puts("\r\n");*/
+
+	}
+	//-------------------------------------------------Regler
+	else if (ReadData[0] == 'R')
+	{
+		KP = (char) atol(ReadData +1);
+		int i=1;
+		while (ReadData[i] != 'Z')
+		{
+			i++;
+		}
+		KI = (char) atol(ReadData +i+1);
+		while (ReadData[i] != 'Y')
+		{
+			i++;
+		}
+		KD = (char) atol(ReadData +i+1);
+
+		
+		/*usart_putc(ReadData[0]);
+		usart_putc('P');
+		usart_puti((int) rpm_p, 3);
+		usart_putc('I');
+		usart_puti((int) rpm_i, 3);
+		usart_putc('D');
+		usart_puti((int) rpm_d, 3);
+		usart_puts("\r\n");*/
 
 	}
 	//------------------------------------------------keine Zeichen empfangen
@@ -176,6 +213,7 @@ void checkData() {
 	else if (ReadData[0] == 'h')
 	{
 		usart_puts("Handshake \r\n");
+		usart_puts("\r\n");
 	}
 }
 
@@ -241,35 +279,30 @@ ISR (TIMER0_OVF_vect)
 	  
   }
   counter++; 
-  if (counter >= 75) // 150 ms 
+  if (counter >= 200) // 400 ms 
   {	
-	  counter = 0; 
-	  rpm_auswertung[LEFT] = rpm[LEFT]; 
-	  rpm_auswertung[RIGHT] = rpm[RIGHT]; 
-	  rpm[LEFT]= 0;
-	  rpm[RIGHT] = 0; 
+	counter = 0; 
+	curr_error = rpm[LEFT] - rpm[RIGHT];
+	rpm[LEFT]= 0;
+	rpm[RIGHT] = 0; 
+   
+	//---------------P
+	rpm_p = (curr_error * KP);
+	//---------------I
+	rpm_i_prev = rpm_i; 
+	rpm_i = KI* curr_error + rpm_i_prev; 
+	//---------------D
+	rpm_d = ((curr_error - prev_error)* KD);
+	prev_error = curr_error; 
   
   
-	rpmdif = rpm_auswertung[LEFT] - rpm_auswertung[RIGHT];
-  
-  
-  
-	rpm_p = rpmdif * KP;
-  
-	rpm_sum = rpm_sum + rpmdif;
-	rpm_sum = constrain(rpm_sum, -255, 255);
-	rpm_i = rpm_sum * 0;
-  
-  
-	IstSpeedRight = IstSpeedRight + (rpm_i + rpm_p);
-	IstSpeedRight = constrain(IstSpeedRight, 100, 255); 
+	IstSpeedRight = IstSpeedLeft + (rpm_i + rpm_p + rpm_d);
 	
-	MotorSpeed(IstSpeedLeft, IstSpeedRight);
-	StatusLED(GREEN);
+	setMotorSpeed(IstSpeedLeft, IstSpeedRight);
   }
-  StatusLED(RED); 
 }
 
+/*Limitiert eine Variable auf einen bestimmten Wertebereich*/
 int constrain(int variable, int low_limit, int high_limit){
 	if (variable < low_limit){
 		return low_limit; 

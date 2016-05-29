@@ -87,9 +87,12 @@ Discarded input sections
  .bss           0x00000000        0x0 AsuroWASD.o
  .text.constrain
                 0x00000000       0x14 AsuroWASD.o
- .data.KI       0x00000000        0x4 AsuroWASD.o
+ .bss.error_sum
+                0x00000000        0x2 AsuroWASD.o
  .bss.odd_data_check
                 0x00000000        0x4 AsuroWASD.o
+ .bss.rpm_auswertung
+                0x00000000        0x2 AsuroWASD.o
  .text          0x00000000        0x0 Uart.o
  .data          0x00000000        0x0 Uart.o
  .bss           0x00000000        0x0 Uart.o
@@ -114,9 +117,13 @@ Discarded input sections
  .text          0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(addsf3.o)
  .data          0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(addsf3.o)
  .bss           0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(addsf3.o)
+ .text.avr-libc.fplib
+                0x00000000        0xa c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(addsf3.o)
  .text          0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(addsf3x.o)
  .data          0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(addsf3x.o)
  .bss           0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(addsf3x.o)
+ .text.avr-libc.fplib
+                0x00000000       0xc0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(addsf3x.o)
  .text          0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(divsf3.o)
  .data          0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(divsf3.o)
  .bss           0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(divsf3.o)
@@ -133,6 +140,8 @@ Discarded input sections
  .text          0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(floatsisf.o)
  .data          0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(floatsisf.o)
  .bss           0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(floatsisf.o)
+ .text.avr-libc.fplib
+                0x00000000       0x7a c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(floatsisf.o)
  .text          0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(fp_inf.o)
  .data          0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(fp_inf.o)
  .bss           0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(fp_inf.o)
@@ -376,7 +385,7 @@ END GROUP
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000      0xb94
+.text           0x00000000      0xaa2
  *(.vectors)
  .vectors       0x00000000       0x26 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.0.98/gcc/dev/atmega8/avr4/crtatmega8.o
                 0x00000000                __vector_default
@@ -478,108 +487,100 @@ END GROUP
  .text.SleepMS  0x000001ae       0x12 asuro.o
                 0x000001ae                SleepMS
  .text.setMotor
-                0x000001c0       0x16 AsuroWASD.o
+                0x000001c0       0x66 AsuroWASD.o
                 0x000001c0                setMotor
+ .text.setMotorSpeed
+                0x00000226       0x54 AsuroWASD.o
+                0x00000226                setMotorSpeed
  .text.checkData
-                0x000001d6       0xf2 AsuroWASD.o
-                0x000001d6                checkData
+                0x0000027a      0x13a AsuroWASD.o
+                0x0000027a                checkData
  .text.readData
-                0x000002c8       0x40 AsuroWASD.o
-                0x000002c8                readData
- .text.main     0x00000308       0xac AsuroWASD.o
-                0x00000308                main
+                0x000003b4       0x40 AsuroWASD.o
+                0x000003b4                readData
+ .text.main     0x000003f4       0x4a AsuroWASD.o
+                0x000003f4                main
  .text.__vector_9
-                0x000003b4      0x202 AsuroWASD.o
-                0x000003b4                __vector_9
+                0x0000043e      0x1ca AsuroWASD.o
+                0x0000043e                __vector_9
  .text.usart_init_intr
-                0x000005b6       0x5e Uart.o
-                0x000005b6                usart_init_intr
+                0x00000608       0x5e Uart.o
+                0x00000608                usart_init_intr
  .text.__vector_11
-                0x00000614       0x5c Uart.o
-                0x00000614                __vector_11
+                0x00000666       0x5c Uart.o
+                0x00000666                __vector_11
  .text.usart_byte_avail_intr
-                0x00000670       0x26 Uart.o
-                0x00000670                usart_byte_avail_intr
+                0x000006c2       0x26 Uart.o
+                0x000006c2                usart_byte_avail_intr
  .text.usart_getc_intr
-                0x00000696       0x3c Uart.o
-                0x00000696                usart_getc_intr
+                0x000006e8       0x3c Uart.o
+                0x000006e8                usart_getc_intr
  .text.usart_putc
-                0x000006d2        0x8 Uart.o
-                0x000006d2                usart_putc
+                0x00000724        0x8 Uart.o
+                0x00000724                usart_putc
  .text.usart_puts
-                0x000006da       0x1c Uart.o
-                0x000006da                usart_puts
+                0x0000072c       0x1c Uart.o
+                0x0000072c                usart_puts
  .text.usart_puti
-                0x000006f6       0x76 Uart.o
-                0x000006f6                usart_puti
+                0x00000748       0x76 Uart.o
+                0x00000748                usart_puti
  .text.avr-libc.fplib
-                0x0000076c        0xa c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(addsf3.o)
-                0x0000076c                __subsf3
-                0x0000076e                __addsf3
+                0x000007be       0x58 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(fixunssfsi.o)
+                0x000007be                __fixunssfsi
  .text.avr-libc.fplib
-                0x00000776       0xc0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(addsf3x.o)
-                0x00000790                __addsf3x
+                0x00000816        0xc c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(fp_inf.o)
+                0x00000816                __fp_inf
  .text.avr-libc.fplib
-                0x00000836       0x58 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(fixunssfsi.o)
-                0x00000836                __fixunssfsi
+                0x00000822        0x6 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(fp_nan.o)
+                0x00000822                __fp_nan
  .text.avr-libc.fplib
-                0x0000088e       0x7a c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(floatsisf.o)
-                0x0000088e                __floatunsisf
-                0x00000892                __floatsisf
+                0x00000828        0xe c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(fp_pscA.o)
+                0x00000828                __fp_pscA
  .text.avr-libc.fplib
-                0x00000908        0xc c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(fp_inf.o)
-                0x00000908                __fp_inf
+                0x00000836        0xe c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(fp_pscB.o)
+                0x00000836                __fp_pscB
  .text.avr-libc.fplib
-                0x00000914        0x6 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(fp_nan.o)
-                0x00000914                __fp_nan
+                0x00000844       0x22 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(fp_round.o)
+                0x00000844                __fp_round
  .text.avr-libc.fplib
-                0x0000091a        0xe c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(fp_pscA.o)
-                0x0000091a                __fp_pscA
+                0x00000866       0x44 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(fp_split3.o)
+                0x00000866                __fp_split3
+                0x00000876                __fp_splitA
  .text.avr-libc.fplib
-                0x00000928        0xe c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(fp_pscB.o)
-                0x00000928                __fp_pscB
+                0x000008aa        0xe c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(fp_zero.o)
+                0x000008aa                __fp_zero
+                0x000008ac                __fp_szero
  .text.avr-libc.fplib
-                0x00000936       0x22 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(fp_round.o)
-                0x00000936                __fp_round
+                0x000008b8        0x4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(mulsf3.o)
+                0x000008b8                __mulsf3
  .text.avr-libc.fplib
-                0x00000958       0x44 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(fp_split3.o)
-                0x00000958                __fp_split3
-                0x00000968                __fp_splitA
- .text.avr-libc.fplib
-                0x0000099c        0xe c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(fp_zero.o)
-                0x0000099c                __fp_zero
-                0x0000099e                __fp_szero
- .text.avr-libc.fplib
-                0x000009aa        0x4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(mulsf3.o)
-                0x000009aa                __mulsf3
- .text.avr-libc.fplib
-                0x000009ae       0xc2 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(mulsf3x.o)
-                0x000009c2                __mulsf3x
-                0x000009c6                __mulsf3_pse
+                0x000008bc       0xc2 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libm.a(mulsf3x.o)
+                0x000008d0                __mulsf3x
+                0x000008d4                __mulsf3_pse
  .text.libgcc.div
-                0x00000a70       0x44 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/avr4\libgcc.a(_udivmodsi4.o)
-                0x00000a70                __udivmodsi4
+                0x0000097e       0x44 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/avr4\libgcc.a(_udivmodsi4.o)
+                0x0000097e                __udivmodsi4
  .text.avr-libc
-                0x00000ab4       0x4c c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libc.a(atol.o)
-                0x00000ab4                atol
+                0x000009c2       0x4c c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libc.a(atol.o)
+                0x000009c2                atol
  .text.avr-libc
-                0x00000b00       0x14 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libc.a(itoa_ncheck.o)
-                0x00000b00                __itoa_ncheck
+                0x00000a0e       0x14 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libc.a(itoa_ncheck.o)
+                0x00000a0e                __itoa_ncheck
  .text.avr-libc
-                0x00000b14       0x2a c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libc.a(mulsi10.o)
-                0x00000b14                __mulsi_const_10
+                0x00000a22       0x2a c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libc.a(mulsi10.o)
+                0x00000a22                __mulsi_const_10
  .text.avr-libc
-                0x00000b3e       0x32 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libc.a(utoa_ncheck.o)
-                0x00000b3e                __utoa_ncheck
-                0x00000b40                __utoa_common
+                0x00000a4c       0x32 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libc.a(utoa_ncheck.o)
+                0x00000a4c                __utoa_ncheck
+                0x00000a4e                __utoa_common
  .text.avr-libc
-                0x00000b70       0x20 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libc.a(strrev.o)
-                0x00000b70                strrev
-                0x00000b90                . = ALIGN (0x2)
+                0x00000a7e       0x20 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr4\libc.a(strrev.o)
+                0x00000a7e                strrev
+                0x00000a9e                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x00000b90        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/avr4\libgcc.a(_exit.o)
-                0x00000b90                _exit
-                0x00000b90                exit
+ .fini9         0x00000a9e        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/avr4\libgcc.a(_exit.o)
+                0x00000a9e                _exit
+                0x00000a9e                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -598,87 +599,95 @@ END GROUP
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x00000b90        0x4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/avr4\libgcc.a(_exit.o)
+ .fini0         0x00000a9e        0x4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/avr4\libgcc.a(_exit.o)
  *(.fini0)
-                0x00000b94                _etext = .
+                0x00000aa2                _etext = .
 
-.data           0x00800060       0x1c load address 0x00000b94
+.data           0x00800060       0x14 load address 0x00000aa2
                 0x00800060                PROVIDE (__data_start, .)
  *(.data)
  *(.data*)
- .data.KP       0x00800060        0x4 AsuroWASD.o
-                0x00800060                KP
- .data.DirLeft  0x00800064        0x1 AsuroWASD.o
-                0x00800064                DirLeft
+ .data.DirLeft  0x00800060        0x1 AsuroWASD.o
+                0x00800060                DirLeft
  .data.DirRight
-                0x00800065        0x1 AsuroWASD.o
-                0x00800065                DirRight
+                0x00800061        0x1 AsuroWASD.o
+                0x00800061                DirRight
  .data.SollSpeedRight
-                0x00800066        0x4 AsuroWASD.o
-                0x00800066                SollSpeedRight
+                0x00800062        0x2 AsuroWASD.o
+                0x00800062                SollSpeedRight
  .data.SollSpeedLeft
-                0x0080006a        0x4 AsuroWASD.o
-                0x0080006a                SollSpeedLeft
+                0x00800064        0x2 AsuroWASD.o
+                0x00800064                SollSpeedLeft
  *(.rodata)
  *(.rodata*)
  .rodata.str1.1
-                0x0080006e        0xd AsuroWASD.o
+                0x00800066        0xd AsuroWASD.o
                                  0x10 (size before relaxing)
  *(.gnu.linkonce.d*)
-                0x0080007c                . = ALIGN (0x2)
- *fill*         0x0080007b        0x1 
-                0x0080007c                _edata = .
-                0x0080007c                PROVIDE (__data_end, .)
+                0x00800074                . = ALIGN (0x2)
+ *fill*         0x00800073        0x1 
+                0x00800074                _edata = .
+                0x00800074                PROVIDE (__data_end, .)
 
-.bss            0x0080007c       0xaf
-                0x0080007c                PROVIDE (__bss_start, .)
+.bss            0x00800074       0xb3
+                0x00800074                PROVIDE (__bss_start, .)
  *(.bss)
  *(.bss*)
- .bss.rpm_sum   0x0080007c        0x2 AsuroWASD.o
-                0x0080007c                rpm_sum
- .bss.rpm_p     0x0080007e        0x4 AsuroWASD.o
-                0x0080007e                rpm_p
- .bss.rpm_i     0x00800082        0x4 AsuroWASD.o
-                0x00800082                rpm_i
- .bss.rpm_auswertung
-                0x00800086        0x2 AsuroWASD.o
-                0x00800086                rpm_auswertung
- .bss.counter   0x00800088        0x1 AsuroWASD.o
-                0x00800088                counter
- .bss.rpmdif    0x00800089        0x2 AsuroWASD.o
-                0x00800089                rpmdif
- .bss.rpm       0x0080008b        0x2 AsuroWASD.o
-                0x0080008b                rpm
- .bss.flag      0x0080008d        0x2 AsuroWASD.o
-                0x0080008d                flag
+ .bss.rpm_i_prev
+                0x00800074        0x2 AsuroWASD.o
+                0x00800074                rpm_i_prev
+ .bss.rpm_d     0x00800076        0x2 AsuroWASD.o
+                0x00800076                rpm_d
+ .bss.prev_error
+                0x00800078        0x2 AsuroWASD.o
+                0x00800078                prev_error
+ .bss.rpm_p     0x0080007a        0x2 AsuroWASD.o
+                0x0080007a                rpm_p
+ .bss.KD        0x0080007c        0x1 AsuroWASD.o
+                0x0080007c                KD
+ .bss.KI        0x0080007d        0x1 AsuroWASD.o
+                0x0080007d                KI
+ .bss.KP        0x0080007e        0x1 AsuroWASD.o
+                0x0080007e                KP
+ .bss.rpm_i     0x0080007f        0x2 AsuroWASD.o
+                0x0080007f                rpm_i
+ .bss.counter   0x00800081        0x2 AsuroWASD.o
+                0x00800081                counter
+ .bss.curr_error
+                0x00800083        0x2 AsuroWASD.o
+                0x00800083                curr_error
+ .bss.rpm       0x00800085        0x4 AsuroWASD.o
+                0x00800085                rpm
+ .bss.flag      0x00800089        0x2 AsuroWASD.o
+                0x00800089                flag
  .bss.brightnessdata
-                0x0080008f        0x4 AsuroWASD.o
-                0x0080008f                brightnessdata
+                0x0080008b        0x4 AsuroWASD.o
+                0x0080008b                brightnessdata
  .bss.IstSpeedRight
-                0x00800093        0x2 AsuroWASD.o
-                0x00800093                IstSpeedRight
+                0x0080008f        0x2 AsuroWASD.o
+                0x0080008f                IstSpeedRight
  .bss.IstSpeedLeft
-                0x00800095        0x2 AsuroWASD.o
-                0x00800095                IstSpeedLeft
+                0x00800091        0x2 AsuroWASD.o
+                0x00800091                IstSpeedLeft
  *(COMMON)
- COMMON         0x00800097        0x1 asuro.o
-                0x00800097                count72kHz
- COMMON         0x00800098        0xf AsuroWASD.o
-                0x00800098                ReadData
- COMMON         0x008000a7       0x84 Uart.o
-                0x008000a7                schreibzeiger
-                0x008000a9                lesezeiger
-                0x008000ab                puffer
-                0x0080012b                PROVIDE (__bss_end, .)
-                0x00000b94                __data_load_start = LOADADDR (.data)
-                0x00000bb0                __data_load_end = (__data_load_start + SIZEOF (.data))
+ COMMON         0x00800093        0x1 asuro.o
+                0x00800093                count72kHz
+ COMMON         0x00800094        0xf AsuroWASD.o
+                0x00800094                ReadData
+ COMMON         0x008000a3       0x84 Uart.o
+                0x008000a3                schreibzeiger
+                0x008000a5                lesezeiger
+                0x008000a7                puffer
+                0x00800127                PROVIDE (__bss_end, .)
+                0x00000aa2                __data_load_start = LOADADDR (.data)
+                0x00000ab6                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x0080012b        0x0
-                0x0080012b                PROVIDE (__noinit_start, .)
+.noinit         0x00800127        0x0
+                0x00800127                PROVIDE (__noinit_start, .)
  *(.noinit*)
-                0x0080012b                PROVIDE (__noinit_end, .)
-                0x0080012b                _end = .
-                0x0080012b                PROVIDE (__heap_start, .)
+                0x00800127                PROVIDE (__noinit_end, .)
+                0x00800127                _end = .
+                0x00800127                PROVIDE (__heap_start, .)
 
 .eeprom         0x00810000        0x0
  *(.eeprom*)
@@ -744,56 +753,56 @@ END GROUP
 .debug_sfnames
  *(.debug_sfnames)
 
-.debug_aranges  0x00000000      0x178
+.debug_aranges  0x00000000      0x180
  *(.debug_aranges)
  .debug_aranges
                 0x00000000       0x98 asuro.o
  .debug_aranges
-                0x00000098       0x48 AsuroWASD.o
+                0x00000098       0x50 AsuroWASD.o
  .debug_aranges
-                0x000000e0       0x98 Uart.o
+                0x000000e8       0x98 Uart.o
 
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000     0x1592
+.debug_info     0x00000000     0x1661
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x00000000      0x436 asuro.o
- .debug_info    0x00000436      0x73e AsuroWASD.o
- .debug_info    0x00000b74      0xa1e Uart.o
+ .debug_info    0x00000436      0x80d AsuroWASD.o
+ .debug_info    0x00000c43      0xa1e Uart.o
 
-.debug_abbrev   0x00000000      0x631
+.debug_abbrev   0x00000000      0x60f
  *(.debug_abbrev)
  .debug_abbrev  0x00000000      0x1c3 asuro.o
- .debug_abbrev  0x000001c3      0x212 AsuroWASD.o
- .debug_abbrev  0x000003d5      0x25c Uart.o
+ .debug_abbrev  0x000001c3      0x1f0 AsuroWASD.o
+ .debug_abbrev  0x000003b3      0x25c Uart.o
 
-.debug_line     0x00000000      0x6d2
+.debug_line     0x00000000      0x6de
  *(.debug_line .debug_line.* .debug_line_end)
  .debug_line    0x00000000      0x25a asuro.o
- .debug_line    0x0000025a      0x1eb AsuroWASD.o
- .debug_line    0x00000445      0x28d Uart.o
+ .debug_line    0x0000025a      0x1f7 AsuroWASD.o
+ .debug_line    0x00000451      0x28d Uart.o
 
-.debug_frame    0x00000000      0x470
+.debug_frame    0x00000000      0x464
  *(.debug_frame)
  .debug_frame   0x00000000      0x138 asuro.o
- .debug_frame   0x00000138      0x118 AsuroWASD.o
- .debug_frame   0x00000250      0x220 Uart.o
+ .debug_frame   0x00000138      0x10c AsuroWASD.o
+ .debug_frame   0x00000244      0x220 Uart.o
 
-.debug_str      0x00000000      0x4fe
+.debug_str      0x00000000      0x523
  *(.debug_str)
- .debug_str     0x00000000      0x24c asuro.o
+ .debug_str     0x00000000      0x241 asuro.o
                                 0x285 (size before relaxing)
- .debug_str     0x0000024c      0x17a AsuroWASD.o
-                                0x34f (size before relaxing)
- .debug_str     0x000003c6      0x138 Uart.o
+ .debug_str     0x00000241      0x1a1 AsuroWASD.o
+                                0x370 (size before relaxing)
+ .debug_str     0x000003e2      0x141 Uart.o
                                 0x335 (size before relaxing)
 
-.debug_loc      0x00000000     0x13bb
+.debug_loc      0x00000000     0x1429
  *(.debug_loc)
  .debug_loc     0x00000000      0x482 asuro.o
- .debug_loc     0x00000482      0x407 AsuroWASD.o
- .debug_loc     0x00000889      0xb32 Uart.o
+ .debug_loc     0x00000482      0x475 AsuroWASD.o
+ .debug_loc     0x000008f7      0xb32 Uart.o
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -813,11 +822,11 @@ END GROUP
 .debug_pubtypes
  *(.debug_pubtypes)
 
-.debug_ranges   0x00000000      0x160
+.debug_ranges   0x00000000      0x150
  *(.debug_ranges)
  .debug_ranges  0x00000000       0x88 asuro.o
- .debug_ranges  0x00000088       0x50 AsuroWASD.o
- .debug_ranges  0x000000d8       0x88 Uart.o
+ .debug_ranges  0x00000088       0x40 AsuroWASD.o
+ .debug_ranges  0x000000c8       0x88 Uart.o
 
 .debug_macro
  *(.debug_macro)
