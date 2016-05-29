@@ -42,6 +42,8 @@ void setMotorSpeed(unsigned char SpeedLeft, unsigned char SpeedRight);
 void checkData(); 
 void readData(); 
 int constrain(int variable, int low_limit, int high_limit);
+uint8_t KeyPressed(void); 
+
 
 int main(void)
 {
@@ -74,9 +76,11 @@ int main(void)
 		usart_puts("\r\n");
 	
 //-----------------------------------------------------------------Minimal/Maximalwerte
-
-
 		setMotor(DirLeft, DirRight, IstSpeedLeft, IstSpeedRight);
+		
+		if (KeyPressed() != 0){
+			usart_puts("Taster"); 			
+		}
 		
 	
 	}
@@ -251,7 +255,7 @@ ISR (TIMER0_OVF_vect)
   bzw.
   1/488 s = 0,002 s  = 2 ms
   */
-  
+  //---------------------------------------------------------------------------------------------------------------Anfang Regelung
   
   OdometrieData(brightnessdata);
 
@@ -300,6 +304,9 @@ ISR (TIMER0_OVF_vect)
 	
 	setMotorSpeed(IstSpeedLeft, IstSpeedRight);
   }
+  
+  //-----------------------------------------------------------------------------------Ende Regelung
+  
 }
 
 /*Limitiert eine Variable auf einen bestimmten Wertebereich*/
@@ -315,4 +322,24 @@ int constrain(int variable, int low_limit, int high_limit){
 	}
 	
 	
+}
+
+/*Wertet zuverlässig die Taster aus*/
+uint8_t KeyPressed(void)
+{
+	uint8_t flag;
+
+	DDRD &= ~SWITCHES; // High Impedance ( Input )
+	DDRC |= (1<<PC4); // ADC-Switch-Pin to Output
+	PORTC |= (1<<PC4); // load capacitor / Pull up
+	SleepMS(1);
+	DDRC &= ~(1<<PC4); // Set ACD-Switch to Input
+	PORTC &= ~(1<<PC4); // High Impedance
+
+	SleepMS(1);
+
+	if(PIND&SWITCHES) flag=FALSE;
+	else flag=TRUE;
+
+	return flag;
 }
